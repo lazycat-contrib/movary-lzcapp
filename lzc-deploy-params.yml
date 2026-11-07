@@ -1,0 +1,16 @@
+params:
+  - id: admin_pw
+    name: 管理员密码
+    type: secret
+    default_value: "Kv7mTq3wXb9RhJ2f"
+    description: 首次部署时为 Movary 管理员账号（admin）注入的初始密码
+  - id: db_pw
+    name: 数据库密码
+    type: secret
+    default_value: "N4xPw8zVcLs2Qe6t"
+    description: 内部 MySQL 数据库密码
+  - id: db_root_pw
+    name: 数据库 root 密码
+    type: secret
+    default_value: "Yh9rGj5nDk3Fb7uW"
+    description: 内部 MySQL root 密码（仅初始化用）

@@ -1,0 +1,62 @@
+application:
+  subdomain: movary
+  multi_instance: false
+  # movary has a login page, but accounts are managed by the administrator
+  # (public registration is disabled by default); the initial admin account is
+  # provisioned with a random generated password via INITIAL_ADMIN_*, so the
+  # platform login gate stays the first line of defense and public_path is
+  # intentionally NOT used (part-db precedent).
+  upstreams:
+    - location: /package-licenses/
+      backend: file:///lzcapp/pkg/content/licenses/
+    - location: /
+      backend: http://movary:8080/
+services:
+  movary:
+    # upstream: leepeuker/movary:0.83.0
+    image: docker.1ms.run/leepeuker/movary:0.83.0
+    environment:
+      - TZ=Asia/Shanghai
+      - APPLICATION_SECRET={{ printf "%x" (stable_secret "movary_app_secret") }}
+      - DATABASE_MODE=mysql
+      - DATABASE_MYSQL_HOST=mysql
+      - DATABASE_MYSQL_PORT=3306
+      - DATABASE_MYSQL_NAME=movary
+      - DATABASE_MYSQL_USER=movary
+      - DATABASE_MYSQL_PASSWORD={{PASSWORD_db_pw}}
+      - INITIAL_ADMIN_EMAIL=admin@movary.local
+      - INITIAL_ADMIN_USERNAME=admin
+      - INITIAL_ADMIN_PASSWORD={{PASSWORD_admin_pw}}
+  mysql:
+    # upstream: mysql:8.4.13
+    image: docker.1ms.run/library/mysql:8.4.13
+    environment:
+      - TZ=Asia/Shanghai
+      - MYSQL_ROOT_PASSWORD={{PASSWORD_db_root_pw}}
+      - MYSQL_DATABASE=movary
+      - MYSQL_USER=movary
+      - MYSQL_PASSWORD={{PASSWORD_db_pw}}
+    binds:
+      - /lzcapp/var/mysql:/var/lib/mysql
+usage: |
+  Movary 是一个自托管的观影记录（movie tracker）应用：记录看过的电影、评分、
+  维护待看清单，并根据你的观影历史给出推荐。
+
+  使用方法：
+  1. 打开应用，用管理员账号 admin 登录。初始密码为部署时自动生成的随机密码
+     （部署参数「管理员密码」），请登录后立刻在 Settings -> Account 修改。
+  2. 在搜索框里输入片名即可添加观影记录、评分与待看条目（数据来自 TMDB）。
+  3. TMDB API key（免费）：默认未配置时搜索功能受限，可在
+     https://www.themoviedb.org/settings/api 免费申请后，
+     由管理员在 Settings -> Server 中填入。
+  4. 其他用户账号由管理员在 Settings -> Server -> Users 手动创建；
+     默认关闭公开注册。邮件相关功能（密码重置邮件等）默认关闭，不影响登录。
+
+  数据与安全：
+  - 管理员初始密码由系统注入随机值，无默认弱口令；请登录后第一时间修改。
+  - 数据库数据保存在 /lzcapp/var/mysql，卸载应用会一并删除，请定期备份。
+  - 本包不对外开放未登录访问（保持平台入口鉴权），请勿自行添加 public_path。
+  - 许可为 MIT，正文见 /package-licenses/ 。
+
+  说明：
+  - 本包未做实机验证，功能以官方文档为准，遇到问题请反馈。

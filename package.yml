@@ -1,0 +1,18 @@
+package: community.lazycat.app.movary
+name: Movary
+version: 0.83.0
+description: "Self-hosted movie tracker: log watched films, rate them, build watchlists and get personal recommendations from your history."
+min_os_version: "1.5.0"
+homepage: https://github.com/leepeuker/movary
+author: leepeuker
+license: MIT
+permissions:
+  required:
+    - net.internet
+locales:
+  zh:
+    name: Movary 影迹记录
+    description: "自托管观影记录应用：记录看过的电影、评分、建待看清单，并根据观影历史推荐影片。"
+  en:
+    name: Movary
+    description: "Self-hosted movie tracker: log watched films, rate them, build watchlists and get recommendations."
